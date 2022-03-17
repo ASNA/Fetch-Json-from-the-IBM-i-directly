@@ -27,12 +27,12 @@ BegClass Test
     BegSr Run Access(*Public) 
         Connect DGDB 
 
-        GetRows(1, 12) 
-        GetRows(2, 12) 
-        GetRows(3, 12) 
-        GetRows(4, 12) 
-        GetRows(5, 12) 
-        GetRows(6, 12) 
+        GetRows(1, 40) 
+        GetRows(2, 40) 
+        GetRows(3, 40) 
+        GetRows(4, 40) 
+        GetRows(5, 40) 
+        GetRows(6, 40) 
 
         Disconnect DGDB 
     EndSr

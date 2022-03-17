@@ -2,7 +2,9 @@
 
 This little spike shows how to call an IBM i RPG program object that returns Json through its parameter list with ASNA Visual RPG.
 
-This is a very performant way to fetch data from the IBM i. It is especially well-suited for getting paged sets of data for Web or Web services work. It has a few drawbacks:
+This is a very performant way to fetch data from the IBM i. It is especially well-suited for getting paged sets of data for Web or Web services work. Although this technique has a few drawbacks (see below) is is _very_ performant. Over a VPN, it fetched a 40 row result set in about 120ms on average from an AVR console application. For a Web app, there is some overhead pushing that data out to the browser, but not much. 
+
+#### Drawbacks
 
 * The RPG parameter list must declare a string large enough to hold the Json result. The maximum length of a *Char field in this context is 32,766. This technique is intended for fetching well-scoped chunks of data and this limitation is probably not a big deal. This little spike is using a 10K field for the Json result. 
 
