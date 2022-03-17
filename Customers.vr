@@ -1,0 +1,17 @@
+﻿Using System
+Using System.Text
+
+// This class defines the columns you from the table to display or otherwise work with. 
+// These columns must match the columns specified in the SQL.
+
+// The case of member names counts! The name of the 
+// JSON_ARRAYAGG is always lowercase and the names of the 
+// JSON_OBJECT keys is how it's specified in the SQL. (as returned
+// by the RPG program).
+
+
+BegClass Customer Access(*Public) 
+    DclProp CMName Type(*Char) Len(40) Access(*Public) 
+    DclProp CMCustNo Type(*Packed) Len(9,0) Access(*Public) 
+EndClass                 
+

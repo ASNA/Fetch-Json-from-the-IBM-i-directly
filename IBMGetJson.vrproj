@@ -45,12 +45,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.vr" />
+    <Compile Include="Program.vr" />
+    <Compile Include="Customers.vr">
+      <SubType>
+      </SubType>
+    </Compile>
     <Compile Include="IBMCall.vr">
       <SubType>
       </SubType>
     </Compile>
     <Compile Include="IBMCallBase.vr">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="JsonObject.vr">
       <SubType>
       </SubType>
     </Compile>

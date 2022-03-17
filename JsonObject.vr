@@ -1,0 +1,8 @@
+﻿Using System
+Using System.Text
+
+
+BegClass JsonObject Access(*Public)
+    DclProp customers Type(Customer) Rank(1) Access(*Public)
+EndClass 
+

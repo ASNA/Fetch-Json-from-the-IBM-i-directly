@@ -41,16 +41,3 @@ BegClass IBMCall Extends(IBMCallBase)
 
 EndClass
 
-// The case of member names counts! The name of the 
-// JSON_ARRAYAGG is always lowercase and the names of the 
-// JSON_OBJECT keys is how it's specified in the SQL. 
-
-BegClass JsonObject
-    DclProp customers Type(Customer) Rank(1) Access(*Public)
-EndClass 
-
-BegClass Customer Access(*Public) 
-    DclProp CMName Type(*Char) Len(40) Access(*Public) 
-    DclProp CMCustNo Type(*Packed) Len(9,0) Access(*Public) 
-EndClass                 
-
