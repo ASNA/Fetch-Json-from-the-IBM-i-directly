@@ -1,0 +1,56 @@
+﻿Using System
+Using System.Text 
+Using System.Collections.Generic
+using NewtonSoft.Json
+
+BegClass IBMCall Extends(IBMCallBase)   
+    DclDB DGDB 
+    
+    DclFld ProgramLibrary Type(*String) 
+    DclFld RPGProgramToCall Type(*String) 
+
+    BegConstructor Access(*Public) 
+        DclSrParm DGDB Type(ASNA.VisualRPG.Runtime.DataBase) 
+        DclSrParm ProgramLibrary Type(*String) 
+        DclSrParm RPGProgramToCall Type(*String) 
+
+        *This.DGDB = DGDB
+        *This.ProgramLibrary = ProgramLibrary
+        *This.RPGProgramToCall = RPGProgramToCall
+    EndConstructor 
+
+    BegFunc Call Type(JsonObject) Access(*Public) 
+        DclSrParm Sql Type(*Char) Len(2000)
+
+        DclFld jo Type(JsonObject) 
+
+        Try 
+             CallProgramObject(DGDB, ProgramLibrary, RPGProgramToCall, Sql)  
+        Catch ex Type(Exception) 
+            Throw *New ApplicationException(String.Format("Error calling IBM i pgm object '{0/1}': {1}", ProgramLibrary, RPGProgramToCall, ex.Message))  
+        EndTry 
+               
+        If ReturnedSQLState.Substring(0,2) = '00' OR +  
+           ReturnedSQLState.Substring(0,2) = '01' 
+           jo = NewtonSoft.Json.JsonConvert.DeserializeObject(Json, *TypeOf(JsonObject)) *As JsonObject
+           LeaveSr jo
+        Else
+           LeaveSr *Nothing 
+        EndIf 
+    EndFunc 
+
+EndClass
+
+// The case of member names counts! The name of the 
+// JSON_ARRAYAGG is always lowercase and the names of the 
+// JSON_OBJECT keys is how it's specified in the SQL. 
+
+BegClass JsonObject
+    DclProp customers Type(Customer) Rank(1) Access(*Public)
+EndClass 
+
+BegClass Customer Access(*Public) 
+    DclProp CMName Type(*Char) Len(40) Access(*Public) 
+    DclProp CMCustNo Type(*Packed) Len(9,0) Access(*Public) 
+EndClass                 
+

@@ -1,0 +1,39 @@
+﻿Using System
+Using System.Text
+
+
+BegClass IBMCallBase Access(*Public)
+
+    DclFld Sql Type(*Char) Len(2000) Access(*Public) 
+    DclFld Json Type(*Char) Len(10000) Access(*Public) 
+    DclFld MessageId Type(*char) Len(10) Access(*Public) 
+    DclFld MessageId1 Type(*char) Len(7) Access(*Public)  
+    DclFld MessageId2 Type(*char) Len(10) Access(*Public) 
+    DclFld MessageLength Type(*Integer4) Access(*Public)  
+    DclFld MessageText Type(*char) Len(1000) Access(*Public) 
+    DclFld ReturnedSQLCode Type(*char) Len(5) Access(*Public) 
+    DclFld ReturnedSQLState Type(*char) Len(5) Access(*Public) 
+
+    BegSr CallProgramObject Access(*Protected) 
+        DclSrParm DGDB Type(ASNA.VisualRPG.Runtime.DataBase) 
+        DclSrParm ProgramLibrary Type(*String) 
+        DclSrParm RPGProgramToCall Type(*String) 
+        DclSrParm Sql Type(*Char) Len(2000) 
+
+        DclFld LibraryProgram Type(*String) 
+        
+        LibraryProgram = String.Format('{0}/{1}', ProgramLibrary, RPGProgramToCall) 
+
+        Call LibraryProgram DB(DGDB) 
+        DclParm Sql
+        DclParm Json 
+        DclParm MessageId 
+        DclParm MessageId1 
+        DclParm MessageId2 
+        DclParm MessageLength 
+        DclParm MessageText 
+        DclParm ReturnedSQLCode
+        DclParm ReturnedSQLState
+    EndSr
+
+EndClass

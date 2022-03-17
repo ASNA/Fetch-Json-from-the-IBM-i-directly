@@ -1,0 +1,93 @@
+﻿Using System
+Using System.Collections
+Using System.Text
+Using System.Diagnostics
+Using System.Linq
+
+BegClass Program
+
+	BegSr Main Shared(*Yes) Access(*Public) Attributes(System.STAThread())
+		DclSrParm args Type(*String) Rank(1)
+
+        DclFld t Type(Test) New()
+
+        t.Run()
+
+        Console.WriteLine('Press any key to continue...') 
+        Console.ReadKey() 
+	EndSr
+
+EndClass
+
+
+BegClass Test
+
+    DclDB DGDB DBName('*Public/Leyland')
+
+    BegSr Run Access(*Public) 
+        Connect DGDB 
+
+        GetRows(1, 12) 
+        GetRows(2, 12) 
+        GetRows(3, 12) 
+        GetRows(4, 12) 
+        GetRows(5, 12) 
+        GetRows(6, 12) 
+
+        Disconnect DGDB 
+    EndSr
+
+    BegSr GetRows
+        DclSrParm PageNumber Type(*Integer4)
+        DclSrParm PageSize Type(*Integer4) 
+
+        DclFld ibm Type(IBMCall) New(DGDB, 'rpzimmie', 'getjson')
+        
+        DclFld JsonObjectReturned Type(JsonObject) 
+        DclFld Sql Type(*Char) Len(2000) 
+        DclFld sw Type(StopWatch) New()
+        DclFld sb Type(StringBuilder) New()
+        DclFld Offset Type(*Integer4) 
+        DclFld Index Type(*Integer4) 
+
+        Offset = (PageSize * PageNumber) - PageSize
+         
+        sw.Start()
+
+        sb.AppendLine('CREATE TABLE qtemp/pager as ') 
+        sb.AppendLine('( ')
+        sb.AppendLine('    WITH result AS ( ') 
+        sb.AppendLine('    SELECT  cmcustno, cmname ') 
+        sb.AppendLine('    FROM  examples/cmastnewL2 ') 
+        sb.AppendLine('    ORDER BY  cmname, cmcustno ') 
+        sb.AppendLine('    LIMIT {pageSize} ') 
+        sb.AppendLine('    OFFSET {offset} ') 
+        sb.AppendLine(') SELECT * FROM result ') 
+        sb.AppendLine(') WITH DATA ')
+
+        Sql = sb.ToString() 
+        
+        // Note the + 1 to get one more row than requested.
+        Sql = Sql.Replace('{offset}', Offset.ToString()) +
+                 .Replace('{pageSize}', (PageSize + 1).ToString()) 
+
+        JsonObjectReturned = Ibm.Call(Sql) 
+
+        // For paged data work in Web apps (or Web services) the query fetches
+        // PageSize + 1 row. The presence of this extra row indicates if there
+        // are more rows to read for the next page. The Index field below 
+        // works to exclude showing the extra row. 
+
+        Index = 1  
+        ForEach Cust Type(Customer) Collection(JsonObjectReturned.Customers)  
+            If Index <= PageSize
+                Console.WriteLine("{0:00000} - {1}", Cust.CMCustNo, Cust.CMName)
+            EndIf 
+            Index +=1
+        EndFor 
+
+        sw.Stop() 
+        Console.WriteLine("Elapsed ms = {0:#,###}", sw.ElapsedMilliseconds) 
+    EndSr
+
+EndClass

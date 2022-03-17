@@ -1,0 +1,78 @@
+        ctl-opt option(*nodebugio:*srcstmt:*nounref) dftactgrp(*no) ;
+
+        Dcl-Pi *N;
+            sql Char(2000);
+            json Char(10000);
+            MessageId Char(10);
+            MessageId1 Char(7);
+            MessageId2 Char(10);
+            MessageLength Int(10);
+            MessageText Char(1000);
+            ReturnedSQLCode Char(5);
+            ReturnedSQLState Char(5);
+        End-Pi;
+
+        ConfigureSQL();
+        CreateTempFile(Sql);
+        GetJson(); 
+
+        Return;
+
+        Dcl-Proc ConfigureSQL;
+            Dcl-Pi *N Int(10);
+            End-Pi;
+
+            EXEC SQL
+                SET OPTION COMMIT = *NONE;
+
+            EXEC SQL
+                SET OPTION NAMING = *SYS;
+
+            Return 0;
+        End-Proc;
+
+        Dcl-Proc CreateTempFile;                   
+            Dcl-Pi *N Int(10);              
+                LocalSql Char(2000);             
+            End-Pi;                         
+
+            EXEC SQL
+                DROP TABLE qtemp/pager IF EXISTS;
+                                            
+            EXEC SQL                        
+                EXECUTE IMMEDIATE :LocalSql;     
+            
+            GetDiagnostics();              
+            Return 0;                       
+        End-Proc;                           
+
+        Dcl-Proc GetJson;
+            Dcl-Pi *N Int(10);
+            End-Pi;
+
+            EXEC SQL
+                SELECT JSON_OBJECT('customers' value JSON_ARRAYAGG(
+                JSON_OBJECT('CMCustNo' value cmcustno,
+                             'CMName' value TRIM(cmname))))
+                INTO :json
+                FROM (
+                  SELECT cmname, cmcustno 
+                  FROM qtemp/pager
+                  ORDER BY cmname, cmcustno
+                );
+
+            GetDiagnostics();
+            Return 0;
+        End-Proc;
+
+        Dcl-Proc GetDiagnostics ;
+            EXEC SQL GET DIAGNOSTICS CONDITION 1
+                :ReturnedSqlCode = DB2_RETURNED_SQLCODE,
+                :ReturnedSQLState = RETURNED_SQLSTATE,
+                :MessageLength = MESSAGE_LENGTH,
+                :MessageText = MESSAGE_TEXT,
+                :MessageId = DB2_MESSAGE_ID,
+                :MessageId1 = DB2_MESSAGE_ID1,
+                :MessageId2 = DB2_MESSAGE_ID2;
+        End-Proc;
+
